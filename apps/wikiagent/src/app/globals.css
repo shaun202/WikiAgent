@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #08080d;
+  --color-ink-900: #0d0d14;
+  --color-ink-850: #12121c;
+  --color-ink-800: #181824;
+  --color-ink-700: #232334;
+  --color-ink-600: #30334a;
+  --color-amber-500: #f5b942;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--color-ink-950);
+  color: #e7e8f0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(245, 185, 66, 0.3);
+}
+
+/* Thin scrollbars to match the dark UI */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-600) transparent;
+}
+
+/* Streaming caret */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+.wa-caret::after {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--color-amber-500);
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes wa-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.wa-pulse {
+  animation: wa-pulse 1.6s ease-in-out infinite;
+}
+
+.wa-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-ink-800) 25%,
+    var(--color-ink-700) 50%,
+    var(--color-ink-800) 75%
+  );
+  background-size: 200% 100%;
+  animation: wa-pulse 1.4s ease-in-out infinite;
+}

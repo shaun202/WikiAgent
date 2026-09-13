@@ -1,0 +1,26 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: wikiagent-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: wikiagent
+      POSTGRES_USER: wikiagent
+      POSTGRES_PASSWORD: wikiagent
+    ports:
+      - "5432:5432"
+    volumes:
+      - wikiagent-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wikiagent -d wikiagent"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  wikiagent-pgdata:
+
+# Start with:   docker compose -f apps/wikiagent/docker-compose.yml up -d
+# The DATABASE_URL for local dev is:
+#   postgres://wikiagent:wikiagent@localhost:5432/wikiagent
+# The app creates its schema automatically on first use (npm run migrate).

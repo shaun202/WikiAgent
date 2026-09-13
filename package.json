@@ -11,10 +11,12 @@
   "workspaces": [
     "packages/*",
     "apps/channel",
+    "apps/wikiagent",
     "apps/web"
   ],
   "scripts": {
     "dev": "npm run dev:web",
+    "dev:wikiagent": "npm run dev --workspace wikiagent",
     "dev:slack": "npm run dev --workspace channel",
     "channel:status": "npx copilotkit@latest channels status --json",
     "channel:setup": "npx copilotkit@latest channels setup",
