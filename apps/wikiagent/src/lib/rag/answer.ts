@@ -1,5 +1,5 @@
 import { getChatModel } from "./chat-model";
-import { getConfig, hasDatabaseConfig, hasOpenAIConfig } from "./config";
+import { getConfig, hasDatabaseConfig, hasEmbeddingsConfig } from "./config";
 import { friendlyError, requiresSetup } from "./errors";
 import { buildRagPrompt } from "./prompt";
 import { rankAndLimitHits } from "./sources";
@@ -34,14 +34,14 @@ export async function* streamRagAnswer(request: AnswerRequest): AsyncGenerator<A
     return;
   }
 
-  // Pre-flight the pipeline's two hard dependencies so the failure message is
+  // Pre-flight the pipeline's hard dependencies so the failure message is
   // the real blocker, not the first call that happens to 401.
-  if (!hasOpenAIConfig()) {
+  if (!hasEmbeddingsConfig()) {
     yield {
       type: "error",
       message:
-        "OpenAI isn't configured. Add OPENAI_API_KEY to .env and restart — both " +
-        "embeddings and answers need it.",
+        "Embeddings aren't configured. Add OPENAI_API_KEY to .env or set " +
+        "EMBEDDINGS_PROVIDER to local (the on-device default).",
     };
     return;
   }

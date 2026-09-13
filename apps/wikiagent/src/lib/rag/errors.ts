@@ -15,7 +15,7 @@ export class WikiAgentError extends Error {
 
 /** Fewer than the classic 200 chars usually means a JS-rendered wall. */
 export function requiresSetup(detail: string): string {
-  return `${detail}\n\nSetup steps: copy .env.example to .env, start the Postgres container (npm run dev:db), and add your OPENAI_API_KEY. See apps/wikiagent/README.md.`;
+  return `${detail}\n\nSetup steps: copy .env.example to .env, start the Postgres container (npm run dev:db), and add your OPENROUTER_API_KEY (chat) — embeddings run locally and need no key. See apps/wikiagent/README.md.`;
 }
 
 export function friendlyError(cause: unknown): Error {
@@ -23,8 +23,8 @@ export function friendlyError(cause: unknown): Error {
 
   if (/api[ _-]?key|401|403|invalid_api_key/i.test(message)) {
     return new WikiAgentError(
-      "missing-openai-key",
-      "OpenAI returned an API key error. Add your OPENAI_API_KEY to .env and restart the app.",
+      "missing-api-key",
+      "The model provider returned an API key error. Add your OPENROUTER_API_KEY (or OPENAI_API_KEY for the OpenAI provider) to .env and restart.",
     );
   }
   if (/ECONNREFUSED|ENOTFOUND|Could not initialise database|connection.*refused/i.test(message)) {

@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 import {
   getConfig,
   hasDatabaseConfig,
+  hasEmbeddingsConfig,
   hasOpenAIConfig,
   hasOpenRouterConfig,
   resolveModelName,
 } from "./config";
-import { EMBEDDING_DIMENSIONS } from "./types";
+import { EMBEDDING_DIMENSIONS, EMBEDDING_MODEL_LOCAL } from "./types";
 
 test("getConfig returns safe defaults for an empty environment", () => {
   const cfg = getConfig({});
@@ -15,8 +16,10 @@ test("getConfig returns safe defaults for an empty environment", () => {
   assert.equal(cfg.WIKIAGENT_TOP_K, 6);
   assert.equal(cfg.WIKIAGENT_CHUNK_SIZE, 1000);
   assert.equal(cfg.WIKIAGENT_CHUNK_OVERLAP, 200);
-  assert.equal(cfg.WIKIAGENT_EMBEDDING_DIM, EMBEDDING_DIMENSIONS);
   assert.equal(cfg.MODEL_PROVIDER, "openai");
+  assert.equal(cfg.EMBEDDINGS_PROVIDER, "local");
+  assert.equal(cfg.WIKIAGENT_EMBEDDING_MODEL, EMBEDDING_MODEL_LOCAL);
+  assert.equal(cfg.WIKIAGENT_EMBEDDING_DIM, EMBEDDING_DIMENSIONS);
 });
 
 test("getConfig coerces numeric tuning knobs", () => {
@@ -42,4 +45,14 @@ test("capability guards behave offline", () => {
   assert.equal(hasDatabaseConfig({}), false);
   assert.equal(hasDatabaseConfig({ DATABASE_URL: "postgres://" }), true);
   assert.equal(hasOpenRouterConfig({ OPENROUTER_API_KEY: "x" }), true);
+});
+
+test("embeddings config is satisfied by the local provider with no key", () => {
+  assert.equal(hasEmbeddingsConfig({}), true);
+  assert.equal(
+    getConfig({ EMBEDDINGS_PROVIDER: "openai" }).EMBEDDINGS_PROVIDER,
+    "openai",
+  );
+  assert.equal(hasEmbeddingsConfig({ EMBEDDINGS_PROVIDER: "openai" }), false);
+  assert.equal(hasEmbeddingsConfig({ EMBEDDINGS_PROVIDER: "openai", OPENAI_API_KEY: "sk-real" }), true);
 });

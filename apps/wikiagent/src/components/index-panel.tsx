@@ -19,7 +19,12 @@ export function IndexPanel({
   onChanged,
 }: {
   pages: WikiPageRecord[];
-  configured: { openai: boolean; database: boolean } | null;
+  configured: {
+    embeddings: "local" | "openai";
+    openai: boolean;
+    openrouter: boolean;
+    database: boolean;
+  } | null;
   databaseOk: boolean | null;
   onChanged: () => Promise<void> | void;
 }) {
@@ -29,7 +34,9 @@ export function IndexPanel({
   const [notice, setNotice] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const needsSetup = !configured?.openai || !configured.database || !databaseOk;
+  const embeddingsOk =
+    !configured || configured.embeddings === "local" ? true : Boolean(configured.openai);
+  const needsSetup = !embeddingsOk || !configured?.database || !databaseOk;
 
   async function submitIngest(event: FormEvent) {
     event.preventDefault();
@@ -161,9 +168,10 @@ export function IndexPanel({
                 Postgres database with pgvector — <code className="text-neutral-300">docker compose -f apps/wikiagent/docker-compose.yml up -d</code>.
               </p>
             ) : null}
-            {!configured?.openai ? (
+            {!embeddingsOk ? (
               <p className="mt-1">
-                Add <code className="text-neutral-300">OPENAI_API_KEY</code> to <code>.env</code>.
+                Add <code className="text-neutral-300">OPENAI_API_KEY</code> to <code>.env</code> or
+                set <code className="text-neutral-300">EMBEDDINGS_PROVIDER=local</code> (the default).
               </p>
             ) : null}
           </div>

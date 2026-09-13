@@ -2,7 +2,12 @@ import type { SourceHit, WikiPageRecord } from "./rag/types";
 
 /** Response shape of GET /api/wiki/status. */
 export interface StatusResponse {
-  configured: { openai: boolean; database: boolean };
+  configured: {
+    embeddings: "local" | "openai";
+    openai: boolean;
+    openrouter: boolean;
+    database: boolean;
+  };
   database: { ok: boolean; detail?: string };
   pages: WikiPageRecord[];
   chunks: number;

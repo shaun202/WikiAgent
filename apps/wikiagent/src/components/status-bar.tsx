@@ -18,7 +18,9 @@ export function StatusBar({
   status: StatusResponse | null;
   loading: boolean;
 }) {
-  const openai = status?.configured.openai;
+  const embeddings = status?.configured.embeddings;
+  const embeddingsOk = embeddings === "local" ? true : Boolean(status?.configured.openai);
+  const chatOk = Boolean(status?.configured.openrouter || status?.configured.openai);
   const databaseConfigured = status?.configured.database;
   const databaseOk = status?.database.ok;
 
@@ -26,8 +28,24 @@ export function StatusBar({
     <div className="border-b border-ink-800 bg-ink-900/60">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3 text-xs text-neutral-400">
         <span className="inline-flex items-center gap-2">
-          <Dot ok={Boolean(openai)} />
-          {loading ? "Checking…" : openai ? "OpenAI key set" : "OpenAI key missing"}
+          <Dot ok={embeddingsOk} />
+          {loading
+            ? "Checking…"
+            : embeddings === "local"
+              ? "Embeddings: local (on-device)"
+              : embeddingsOk
+                ? "Embeddings: OpenAI key set"
+                : "Embeddings: OpenAI key missing"}
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <Dot ok={chatOk} />
+          {loading
+            ? "Checking…"
+            : chatOk
+              ? status?.configured.openrouter
+                ? "Chat: OpenRouter key set"
+                : "Chat: OpenAI key set"
+              : "Chat: model key missing"}
         </span>
         <span className="inline-flex items-center gap-2">
           <Dot ok={Boolean(databaseConfigured && databaseOk)} />

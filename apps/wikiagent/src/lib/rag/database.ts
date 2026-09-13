@@ -1,6 +1,6 @@
 import { Pool, type PoolClient, type QueryResultRow } from "pg";
 import { getConfig } from "./config";
-import { SCHEMA_DDL } from "./schema-ddl";
+import { buildSchemaDDL } from "./schema-ddl";
 import type { Provider, WikiPageRecord } from "./types";
 
 /**
@@ -42,7 +42,8 @@ export function getPool(): Pool {
 export async function ensureSchema(client: Pool = getPool()): Promise<void> {
   if (!schemaReady) {
     schemaReady = (async () => {
-      await client.query(SCHEMA_DDL);
+      const { WIKIAGENT_EMBEDDING_DIM } = getConfig();
+      await client.query(buildSchemaDDL(WIKIAGENT_EMBEDDING_DIM));
     })().catch((err) => {
       schemaReady = null;
       throw new Error(`Could not initialise database schema: ${(err as Error).message}`);

@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { hasOpenAIConfig, hasDatabaseConfig } from "@/lib/rag/config";
+import {
+  hasOpenAIConfig,
+  hasOpenRouterConfig,
+  hasDatabaseConfig,
+  embeddingsProvider,
+} from "@/lib/rag/config";
 import { countChunks, healthCheck, listPages } from "@/lib/rag/database";
 import type { WikiPageRecord } from "@/lib/rag/types";
 
@@ -25,7 +30,9 @@ export async function GET() {
   }
   return NextResponse.json({
     configured: {
+      embeddings: embeddingsProvider(),
       openai: hasOpenAIConfig(),
+      openrouter: hasOpenRouterConfig(),
       database: hasDatabaseConfig(),
     },
     database,

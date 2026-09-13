@@ -13,6 +13,7 @@
     "ingest": "node --env-file-if-exists=../../.env --import tsx scripts/ingest.ts"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.2.0",
     "@langchain/core": "^0.3.40",
     "@langchain/openai": "^0.4.6",
     "@langchain/textsplitters": "^0.1.0",

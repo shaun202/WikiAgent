@@ -1,6 +1,7 @@
--- WikiAgent schema (mirrors src/lib/rag/schema-ddl.ts).
+-- WikiAgent schema (mirrors src/lib/rag/schema-ddl.ts, default 384-d local embeddings).
 -- The app applies this itself on boot; this file exists for out-of-band tools
 -- such as a docker init script or a DBA applying migrations by hand.
+-- If EMBEDDINGS_PROVIDER=openai, change vector(384) to vector(1536).
 
 CREATE EXTENSION IF NOT EXISTS vector;
 
@@ -23,7 +24,7 @@ CREATE TABLE IF NOT EXISTS wiki_chunks (
   content text NOT NULL,
   token_estimate integer NOT NULL DEFAULT 0,
   metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
-  embedding vector(1536),
+  embedding vector(384),
   created_at timestamptz NOT NULL DEFAULT now()
 );
 

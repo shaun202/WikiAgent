@@ -5,7 +5,7 @@ import { friendlyError, WikiAgentError } from "./errors";
 test("friendlyError maps an API key failure to a setup hint", () => {
   const err = friendlyError(new Error("Incorrect API key provided: sk-***. You can find your API key at https://platform.openai.com/account/api-keys. HTTP 401"));
   assert.ok(err instanceof WikiAgentError);
-  assert.equal((err as WikiAgentError).code, "missing-openai-key");
+  assert.equal((err as WikiAgentError).code, "missing-api-key");
 });
 
 test("friendlyError maps refused connections to database guidance", () => {

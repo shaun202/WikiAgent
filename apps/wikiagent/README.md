@@ -31,7 +31,7 @@ and LangChain for the retrieval pipeline primitives.
 | Styling | Tailwind CSS v4 |
 | Backend | Next.js Route Handlers (Node runtime) |
 | Database | PostgreSQL 16 + pgvector |
-| Embeddings | OpenAI `text-embedding-3-small` (1536-d) |
+| Embeddings | `all-MiniLM-L6-v2` (384-d) **local ONNX** via `@huggingface/transformers` — no API key |
 | LLM | OpenAI chat model (provider-switchable to OpenRouter) |
 | RAG glue | LangChain (`@langchain/openai`, `@langchain/textsplitters`) + hand-written retrieval SQL |
 
@@ -45,7 +45,8 @@ docker compose -f apps/wikiagent/docker-compose.yml up -d
 
 # 2. Configure environment
 cp .env.example .env
-# edit .env: set OPENAI_API_KEY and keep DATABASE_URL as in the example
+# edit .env: set OPENROUTER_API_KEY (chat) and keep DATABASE_URL as in the example
+# embeddings run locally by default — no OpenAI key needed
 
 # 3. Run the app
 npm run dev:wikiagent
@@ -80,7 +81,7 @@ Normalise ──► title, source_url, summary, plain text
 Chunk ──► RecursiveCharacterTextSplitter (WIKIAGENT_CHUNK_SIZE/OVERLAP, token-aware)
         │
         ▼
-Embed ──► text-embedding-3-small (1536-d)  →  wiki_chunks.embedding
+Embed ──► all-MiniLM-L6-v2 (384-d, on-device)  →  wiki_chunks.embedding
         │
         ▼
 Store ──► wiki_pages (metadata) + wiki_chunks (vector), HNSW cosine index
@@ -128,17 +129,20 @@ apps/wikiagent
 | Key | Default | Purpose |
 | --- | --- | --- |
 | `DATABASE_URL` | *(example)* | Postgres connection string |
-| `OPENAI_API_KEY` | — | Embeddings + chat (shared with the kit) |
+| `OPENROUTER_API_KEY` | — | Chat answers via OpenRouter (the demo's model provider) |
+| `OPENAI_API_KEY` | — | Only needed when `EMBEDDINGS_PROVIDER=openai` and/or `MODEL_PROVIDER=openai` |
+| `EMBEDDINGS_PROVIDER` | `local` | `local` (free on-device, default) or `openai` |
 | `WIKIAGENT_MODEL` / `MODEL` | `gpt-4o-mini` | Chat model |
-| `WIKIAGENT_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model |
-| `WIKIAGENT_EMBEDDING_DIM` | `1536` | Must match the `vector(1536)` column |
+| `WIKIAGENT_EMBEDDING_MODEL` | `Xenova/all-MiniLM-L6-v2` | Embedding model (`text-embedding-3-small` for the openai provider) |
+| `WIKIAGENT_EMBEDDING_DIM` | `384` | Must match the `vector(384)` column (1536 for the openai provider) |
 | `WIKIAGENT_TOP_K` | `6` | Chunks retrieved per question |
 | `WIKIAGENT_CHUNK_SIZE` / `CHUNK_OVERLAP` | `1000` / `200` | Recursive character splitter |
 | `WIKIAGENT_MAX_CHUNKS` | `200` | Refuse pages above this chunk count |
-| `MODEL_PROVIDER` / `OPENROUTER_API_KEY` | — | Optional: route chat answers via OpenRouter |
+| `MODEL_PROVIDER` | `openai` | `openai` or `openrouter`; chat route only |
 
-Embedding dimension is baked into the SQL schema (`vector(1536)`); only lower it if you also
-change `schema-ddl.ts` and `migrations/001_init.sql` together.
+Embedding dimension is baked into the SQL schema (`vector(384)` for the default local
+provider). If you switch `EMBEDDINGS_PROVIDER=openai`, set `WIKIAGENT_EMBEDDING_DIM=1536`
+and change `schema-ddl.ts` and `migrations/001_init.sql` to `vector(1536)` together.
 
 ## API
 
