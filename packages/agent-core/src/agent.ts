@@ -34,6 +34,7 @@ export function makeAgent(threadId: string, options: AgentFactoryOptions = {}) {
     // can call one tool and then stops — before it ever sees the result. Any
     // agent with tools needs room to loop.
     maxSteps: 10,
+    maxOutputTokens: 2048,
 
     // The workplace, when one is configured. Empty array when it is not, so the
     // agent is never handed tools that would 401. Add your own MCP servers here

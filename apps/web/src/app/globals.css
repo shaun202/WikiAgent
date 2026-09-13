@@ -59,6 +59,33 @@ p {
   gap: 24px;
   margin-bottom: 32px;
 }
+.ck-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ck-agent-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--text);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  box-shadow: 0 8px 20px rgb(1 5 7 / 16%);
+  transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+}
+.ck-agent-toggle:hover {
+  transform: translateY(-2px);
+}
+.ck-agent-toggle.is-open {
+  background: var(--surface);
+  color: var(--text);
+}
 .ck-eyebrow {
   font-size: 12px;
   color: var(--muted);
@@ -89,6 +116,18 @@ p {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 24px;
   align-items: flex-start;
+}
+.ck-reading-layout {
+  display: block;
+}
+.ck-reading-layout.is-assistant-open {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.65fr);
+  gap: 24px;
+  align-items: start;
+}
+.ck-article-panel {
+  min-height: min(720px, calc(100dvh - 220px));
 }
 .ck-panel {
   background: var(--surface);
@@ -248,6 +287,10 @@ p {
   padding: 0;
   overflow: hidden;
 }
+.ck-reading-layout:not(.is-assistant-open) .ck-article-panel {
+  max-width: 900px;
+  margin: 0 auto;
+}
 .ck-assistant-header {
   padding: 24px 28px;
   border-bottom: 1px solid var(--border);
@@ -289,6 +332,13 @@ p {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
   }
+  .ck-reading-layout.is-assistant-open {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .ck-article-panel {
+    min-height: auto;
+  }
   .ck-assistant {
     height: 560px;
   }
@@ -302,6 +352,10 @@ p {
     flex-wrap: wrap;
     gap: 16px;
     margin-bottom: 24px;
+  }
+  .ck-header-actions {
+    width: 100%;
+    justify-content: space-between;
   }
   .ck-workspace h1 {
     font-size: 28px;
@@ -371,6 +425,39 @@ p {
   margin: 0.6rem 0 0;
   padding-left: 1.1rem;
   color: var(--muted);
+}
+.ck-article {
+  max-width: 62ch;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.ck-detail-facts--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ck-source-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ck-source-list li {
+  border-top: 1px solid var(--border);
+  padding: 0.65rem 0;
+}
+.ck-source-list li:first-child {
+  border-top: 0;
+}
+.ck-source-list strong,
+.ck-source-list span {
+  display: block;
+}
+.ck-source-list span {
+  color: var(--muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.7rem;
+  margin-top: 0.15rem;
+}
+.ck-source-list p {
+  margin: 0.35rem 0 0;
 }
 
 .ck-scroll {
@@ -531,3 +618,23 @@ p {
   font-size: 13px;
   overflow-wrap: anywhere;
 }
+.ck-wiki-search { padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.ck-wiki-search--manual { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
+.ck-wiki-search label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+.ck-wiki-search > div { display: flex; gap: 8px; }
+.ck-wiki-search input { min-width: 0; flex: 1; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 10px 12px; color: var(--text); }
+.ck-wiki-search button { border: 0; border-radius: 8px; padding: 0 14px; background: var(--accent); color: var(--surface); }
+.ck-wiki-search button:disabled { opacity: .5; }
+.ck-recommendations { padding: 18px 0 0; }
+.ck-recommendations > button { display: block; width: 100%; text-align: left; border: 1px solid var(--border); border-radius: 8px; background: #faf8f5; padding: 10px 12px; margin-top: 8px; color: var(--text); }
+.ck-recommendations > button:hover { border-color: var(--accent); }
+.ck-recommendations strong, .ck-recommendations span { display: block; overflow-wrap: anywhere; }
+.ck-recommendations strong { font-size: 13px; }
+.ck-recommendations span { color: var(--muted); font-size: 11px; margin-top: 4px; }
+.ck-wiki-article { padding-top: 24px; }
+.ck-source-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 11px; }
+.ck-source-meta a { color: var(--accent); }
+.ck-wiki-article h2 { font-size: 28px; line-height: 1.2; margin: 16px 0; }
+.ck-wiki-article .ck-article { white-space: pre-line; max-height: 520px; overflow: auto; padding-right: 12px; }
+.ck-notice--error { color: #a83232; }
+@media (max-width: 560px) { .ck-wiki-search > div { flex-direction: column; } .ck-wiki-search button { padding: 10px; } .ck-source-meta { flex-direction: column; gap: 4px; } }

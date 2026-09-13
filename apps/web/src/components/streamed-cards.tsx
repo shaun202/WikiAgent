@@ -15,6 +15,10 @@ export interface TimelineProps {
   rows?: Array<Array<string | null> | null> | null;
 }
 
+export interface SourceListProps {
+  sources?: Array<{ id?: string; title?: string; section?: string; excerpt?: string } | null> | null;
+}
+
 const toneColor = { neutral: "var(--muted)", good: "#2e7d5b", attention: "var(--accent)" } as const;
 
 export function IncidentCard({ headline, summary, facts, nextSteps, tone }: IncidentCardProps) {
@@ -73,6 +77,25 @@ export function Timeline({ title, columns, rows }: TimelineProps) {
             </tbody>
           </table>
         </div>
+      )}
+    </article>
+  );
+}
+
+export function SourceList({ sources }: SourceListProps) {
+  return (
+    <article className="ck-card ck-card--sources">
+      <h3>Sources from the Northstar wiki</h3>
+      {!sources?.length ? <p>Retrieving relevant pages…</p> : (
+        <ul className="ck-source-list">
+          {sources.map((source, index) => (
+            <li key={source?.id ?? index}>
+              <strong>{source?.title || "Loading source…"}</strong>
+              <span>{source?.id ? `[${source.id}]` : ""} {source?.section || ""}</span>
+              <p>{source?.excerpt || "Loading excerpt…"}</p>
+            </li>
+          ))}
+        </ul>
       )}
     </article>
   );
