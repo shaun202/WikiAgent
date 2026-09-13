@@ -21,11 +21,11 @@ import {
   CopilotRuntime,
   createCopilotHonoHandler,
 } from "@copilotkit/runtime/v2";
-import { makeAgent } from "agent-core";
+import { makeAgent, WIKI_AGENT_PROMPT } from "agent-core";
 
 // Web writes use /api/followups after a browser approval. Never expose raw MCP writes here.
 const runtime = new CopilotRuntime({
-  agents: () => ({ default: makeAgent(randomUUID(), { workplace: false }) }),
+  agents: () => ({ default: makeAgent(randomUUID(), { workplace: false, prompt: WIKI_AGENT_PROMPT }) }),
 });
 
 const app = createCopilotHonoHandler({
