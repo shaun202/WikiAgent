@@ -2,14 +2,15 @@ import { createChannel } from "@copilotkit/channels";
 import { isSearchConfigured, isWorkplaceConfigured, WORKPLACE_CONTEXT } from "agent-core";
 import { makeChannelAgent } from "./agent";
 import { required } from "./env";
-import { IncidentCard, Timeline, welcomeMessage } from "./components";
-import { proposeAction, readThread, searchTheWeb } from "./tools";
+import { SourceList, WikiCard, welcomeMessage } from "./components";
+import { browseWikiTool, readThread, searchTheWeb, searchWikiTool } from "./tools";
 
 // Tools are registered only when their credential is present, so the agent is
 // never handed a tool that will fail when it calls it.
 const tools = [
   readThread,
-  proposeAction,
+  searchWikiTool,
+  browseWikiTool,
   ...(isSearchConfigured() ? [searchTheWeb] : []),
 ];
 
@@ -26,7 +27,7 @@ export const channel = createChannel({
 
   agent: makeChannelAgent,
   tools,
-  components: [IncidentCard, Timeline],
+  components: [WikiCard, SourceList],
 
   // Injected into the agent's prompt on every run.
   context: [
@@ -34,7 +35,7 @@ export const channel = createChannel({
     {
       description: "Rendering",
       value:
-        "You can draw native UI by calling incident_card or timeline. Prefer them over prose whenever the answer has structure.",
+        "You can draw native UI by calling wiki_card and source_list. Search first, then cite exact page IDs in brackets.",
     },
     ...(isWorkplaceConfigured()
       ? [{ description: "Workplace", value: WORKPLACE_CONTEXT }]
@@ -42,7 +43,7 @@ export const channel = createChannel({
     {
       description: "Surface",
       value:
-        "This is a chat thread in a channel people are actively working in. Assume others are reading and that some joined late.",
+        "This is a chat thread in a channel people are actively working in. Read earlier messages, search the local wiki, and distinguish retrieved policy text from inference.",
     },
   ],
 

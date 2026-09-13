@@ -6,18 +6,18 @@ import { from, type Observable } from "rxjs";
 import { createChannel } from "@copilotkit/channels";
 import { startChannelsWithGatewayControl } from "@copilotkit/channels-intelligence";
 import type { searchWeb } from "agent-core";
-import { IncidentCard } from "./components";
+import { SourceList, WikiCard } from "./components";
 import { createSearchTool } from "./search";
 import { ManagedGateway, preparedDelivery } from "./testing/managed-gateway";
 
 /** Real AG-UI events exercise the SDK tool loop and Slack renderer together. */
 class ResearchAgent extends AbstractAgent {
   private iteration = 0;
-  constructor(private readonly withIncident = true) {
+  constructor(private readonly withWikiCard = true) {
     super();
   }
   override clone(): ResearchAgent {
-    const clone = new ResearchAgent(this.withIncident);
+    const clone = new ResearchAgent(this.withWikiCard);
     clone.threadId = this.threadId;
     clone.setMessages([...this.messages]);
     clone.setState(this.state);
@@ -28,20 +28,17 @@ class ResearchAgent extends AbstractAgent {
     const calls = [
       { name: "search_web", args: { query: "retry storm", results: 1 } },
       {
-        name: "incident_card",
+        name: "wiki_card",
         args: {
-          severity: "sev2",
-          headline: "Retries are amplifying latency",
-          impact: "Checkout requests time out",
-          started: "09:03 UTC",
-          known: ["Connection-pool wait increased"],
-          trying: ["Investigating retry policy"],
+          answer: "Temporary access expires after seven days.",
+          citations: ["access-requests"],
+          caveat: "A system owner may renew it.",
         },
       },
     ];
     const call = calls[this.iteration++];
     const activeCall =
-      this.withIncident || this.iteration === 1 ? call : undefined;
+      this.withWikiCard || this.iteration === 1 ? call : undefined;
     const events: BaseEvent[] = [
       {
         type: EventType.RUN_STARTED,
@@ -74,14 +71,14 @@ class ResearchAgent extends AbstractAgent {
   }
 }
 
-async function runResearch(search: typeof searchWeb, withIncident = true) {
+async function runResearch(search: typeof searchWeb, withWikiCard = true) {
   const gateway = new ManagedGateway();
   const channel = createChannel({
     name: "support",
     identifyUser: "platform",
     showToolStatus: true,
-    agent: () => new ResearchAgent(withIncident),
-    components: [IncidentCard],
+    agent: () => new ResearchAgent(withWikiCard),
+    components: [WikiCard, SourceList],
     tools: [createSearchTool(search)],
   });
   let failure: unknown;
@@ -130,7 +127,7 @@ async function runResearch(search: typeof searchWeb, withIncident = true) {
     await gateway.deliver(
       preparedDelivery("research", "slack", {
         kind: "text",
-        text: "Research the incident and show a card",
+        text: "Search the wiki and show a card",
       }),
     );
     return {
@@ -159,7 +156,7 @@ it(
     );
     assert.equal(cards.length, 2, JSON.stringify({ payloads, agentMessages }));
     assert.match(JSON.stringify(cards[0]), /Search sources/);
-    assert.match(JSON.stringify(cards[1]), /Retries are amplifying latency/);
+    assert.match(JSON.stringify(cards[1]), /Temporary access expires/);
     const statuses = payloads.filter(
       (payload) => payload.kind === "slack.thread.status",
     );

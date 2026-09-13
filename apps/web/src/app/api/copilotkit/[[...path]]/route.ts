@@ -31,6 +31,7 @@ const runtime = new CopilotRuntime({
 const app = createCopilotHonoHandler({
   runtime,
   basePath: "/api/copilotkit",
+  mode: "single-route",
 });
 
 export const GET = app.fetch;
