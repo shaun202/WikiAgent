@@ -72,51 +72,6 @@ Create a follow-up for this incident.
 
 Review the proposed fields, approve them, and refresh the page to verify the saved record can be read back.
 
-## Run Slack
-
-Slack requires a CopilotKit Intelligence project, a managed Channel, and optionally an Exa key. Set these values in `.env`:
-
-```dotenv
-CHANNEL_CODE=your-channel-code
-INTELLIGENCE_API_KEY=your-project-key
-EXA_API_KEY=your-exa-key
-EXA_SEARCH_TYPE=fast
-```
-
-Run the setup handoff, then follow the prompt it prints:
-
-```bash
-npm run channel:setup -- --no-clipboard
-```
-
-After the Channel and Slack app are connected, start the listener:
-
-```bash
-npm run dev:slack
-```
-
-Mention the bot in a populated Slack thread. No public tunnel is required for the managed Channels path. See [apps/channel/README.md](apps/channel/README.md) and [dev-docs/setup.md](dev-docs/setup.md) for the full setup.
-
-## Run mobile
-
-The Expo app is intentionally outside the npm workspace. Start the web runtime first:
-
-```bash
-npm run dev:web
-```
-
-In a second terminal:
-
-```bash
-cd apps/mobile
-npm ci
-npm start
-```
-
-Press `i` for the iOS Simulator or `a` for an Android emulator. The default runtime URL is `http://localhost:3100/api/mobile-copilotkit`. Android emulators use `http://10.0.2.2:3100/api/mobile-copilotkit`; physical devices need a deliberately reachable runtime URL in `apps/mobile/.env`.
-
-See [apps/mobile/README.md](apps/mobile/README.md) for device networking and bundle checks.
-
 ## Verify the repository
 
 The root checks are offline and do not require live provider credentials:
@@ -134,14 +89,6 @@ npm run build --workspace web
 npm test --workspace channel
 ```
 
-For mobile:
-
-```bash
-npm test --prefix apps/mobile
-npm run typecheck --prefix apps/mobile
-npm run bundle:ios --prefix apps/mobile
-npm run bundle:android --prefix apps/mobile
-```
 
 ## Project layout
 
