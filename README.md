@@ -1,4 +1,5 @@
 # WikiChat / Agents Everywhere Starter Kit
+A RAG for explaining a wikipage, basically like a librarian in a library.
 
 This repository contains three CopilotKit agent surfaces:
 
