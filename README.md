@@ -1,110 +1,163 @@
-<div align="center">
+# WikiChat / Agents Everywhere Starter Kit
 
-# Agents, Everywhere Hackathon Starter Kit
+This repository contains three CopilotKit agent surfaces:
 
-![Agents, Everywhere hackathon — OpenAI, CopilotKit, OpenRouter, Exa, Auth0, and Ambiguous AI](assets/banner.png)
+- **Web:** a browser chat with page context and an approval flow for creating workplace follow-ups.
+- **Slack:** a thread agent delivered through CopilotKit Channels, with optional Exa web search.
+- **Mobile:** an Expo finance assistant that uses the web runtime and renders native tool cards.
 
-**Build an agent that belongs where people already work, talk, and live.**
+Start with the web app first. Slack and mobile are optional integrations and have separate credentials or device setup.
 
-[Overview](#overview) · [Get started](#get-started) · [Templates](#templates) · [Coding agent](#coding-agent) · [Resources](#resources)
+## Prerequisites
 
-</div>
+- Node.js 22 or newer (`node --version`)
+- npm
+- An API key for either OpenAI or OpenRouter
+- Docker Desktop only if you are working on an additional database-backed app
 
-## Overview
+## Install
 
-Build for **[Agents, Everywhere: Bots, Channels, & More](https://aitinkerers.org/hackathons/global/agents-everywhere)**, the AI Tinkerers global hackathon on **September 12–13, 2026**. Choose your city on the event page for its local schedule. Put an agent inside a conversation, an app, a phone, or a physical environment. Make the context of that place essential to what it can do.
+From the repository root:
 
-This kit gives you three runnable templates, files to hand to your coding agent, and sponsor setup notes. Pick a user, a problem, and one complete interaction. You can use any stack; you do not need every sponsor or every surface.
-
-Your project and its core functionality must be created during the event. Existing libraries, templates, and starter code are allowed; describe what you reuse and what you build. Read [the rules](hackathon-rules.md), then follow your city's participant portal for the current deadline and judging criteria.
-
-## Get started
-
-### Onboarding Prompt
-
-For web, paste this into your coding agent:
-
-```text
-Help me get started with CopilotKit. Run this command and follow the instructions:
-
-npx --yes copilotkit@latest onboard start
+```bash
+npm ci
 ```
 
-For Slack, follow [Channels setup](apps/channel/README.md#get-started). For React Native, follow the [Expo setup instructions](apps/mobile/README.md#get-started).
+Create the local environment file:
 
-## Templates
+```bash
+# macOS/Linux/Git Bash
+cp .env.example .env
 
-These starting points serve different kinds of context. **CopilotKit Channels** brings the Slack agent into the conversation; **CopilotKit React** connects the web agent to the app people are using; **CopilotKit React Native** brings the same agent pattern onto a phone.
+# Windows PowerShell
+Copy-Item .env.example .env
+```
 
-### 1. Slack — an agent that joins the thread
+Edit `.env` and choose one model provider. OpenRouter is the default in the supplied example:
 
-**OpenAI + CopilotKit Channels + Exa**
+```dotenv
+MODEL_PROVIDER=openrouter
+OPENROUTER_API_KEY=your-openrouter-key
+MODEL=openai/gpt-5.6-sol
+```
 
-An agent reads what people already said, researches with Exa, and answers in the same thread with native cards and source links. Start with a support conversation, a research discussion, or a team decision.
+Or use OpenAI:
 
-The included Slack app supplies thread history, subscriptions, search, and Channels UI. Configure your model, Exa, and a managed Channel, then run `npm run dev:slack`. No public tunnel is needed. Teams or other chat platforms can use the same Channels pattern, but this starter ships the Slack app.
+```dotenv
+MODEL_PROVIDER=openai
+OPENAI_API_KEY=your-openai-key
+MODEL=gpt-5.6-sol
+```
 
-**[Use the Slack template →](apps/channel/)**
+Choose a model available to your account. Keep API keys in `.env`; do not commit them.
 
-### 2. Web — an agent inside your app
+## Run the web app
 
-**OpenAI + CopilotKit React + Ambiguous AI**
+Start the default app from the repository root:
 
-An agent sees the page you are on and turns a request into a real workplace record you can still find after a refresh. Adapt it to customer follow-ups, a project workspace, or a personal planning app.
+```bash
+npm run dev:web
+```
 
-The included web app supplies page context, frontend tools, agent-rendered UI, and a browser approval step. Connect an Ambiguous AI workspace, then run `npm run dev:web`; approved follow-ups are saved through the server and can be read back after refresh.
+Open [http://127.0.0.1:3100](http://127.0.0.1:3100). The shorter `npm run dev` command is an alias for the same web app.
 
-**[Use the web template →](apps/web/)**
+The web template includes sample incidents, page context, generated UI, and an approval flow for workplace follow-ups. To save follow-ups to Ambiguous AI, also set `AMBIGUOUS_API_KEY` in `.env`. Without it, the app can still be developed and tested, but provider-backed writes will not work.
 
-### 3. React Native — an agent in your pocket
+Try asking:
 
-**OpenAI or OpenRouter + CopilotKit React Native**
+```text
+What's happening here?
+Create a follow-up for this incident.
+```
 
-A mobile agent reads app state, renders native cards, and waits for a tap before changing local sample data. Start with a personal finance assistant, a field checklist, an inventory counter, or any workflow where phone context and approval matter.
+Review the proposed fields, approve them, and refresh the page to verify the saved record can be read back.
 
-The included Expo app supplies seeded finance state, native rendered tool UI, a human-in-the-loop expense approval, and a mobile-specific CopilotKit runtime endpoint served by the web app. Configure your model provider, start `npm run dev:web`, then run the mobile app from `apps/mobile`.
+## Run Slack
 
-**[Use the React Native template →](apps/mobile/)**
+Slack requires a CopilotKit Intelligence project, a managed Channel, and optionally an Exa key. Set these values in `.env`:
 
-### Make the demo yours
+```dotenv
+CHANNEL_CODE=your-channel-code
+INTELLIGENCE_API_KEY=your-project-key
+EXA_API_KEY=your-exa-key
+EXA_SEARCH_TYPE=fast
+```
 
-The supplied on-call and finance assistants are **infrastructure examples**: read ambient context, call a tool, render useful UI, and return a verifiable result. Choose a different user, problem, dataset, and interaction; the goal is your own project, not another version of the starter scenario.
+Run the setup handoff, then follow the prompt it prints:
 
-Use the [demo prompts](dev-docs/demo-prompts.md) to learn how the pieces connect, then replace the sample domain. In the Slack sample incident flow, approval cards record decisions without executing production actions. In the web follow-up flow, the page approval button saves the reviewed Ambiguous task. In the mobile finance flow, approval changes local in-memory sample data. Enforce the same kind of write boundary around any external action you add.
+```bash
+npm run channel:setup -- --no-clipboard
+```
 
-Want another surface pattern? The web app also includes a voice route, and the shared agent can connect to remote MCP tools when configured. The event surfaces are inspiration, not separate tracks or a requirement to build multiple apps.
+After the Channel and Slack app are connected, start the listener:
 
-## Coding agent
+```bash
+npm run dev:slack
+```
 
-Give your agent these files before it starts coding:
+Mention the bot in a populated Slack thread. No public tunnel is required for the managed Channels path. See [apps/channel/README.md](apps/channel/README.md) and [dev-docs/setup.md](dev-docs/setup.md) for the full setup.
 
-| File | What it provides |
-|---|---|
-| [hackathon-overview.md](hackathon-overview.md) | The challenge, four surfaces, and official judging criteria |
-| [hackathon-rules.md](hackathon-rules.md) | Build eligibility, inherited code, and required deliverables |
-| [using-sponsor-tools.md](using-sponsor-tools.md) | Every sponsor featured in this kit: access, authentication, configuration, and a first working call |
-| [AGENTS.md](AGENTS.md) | Repository conventions and verification commands |
-| [Channels skill](.agents/skills/build-channels-agent/SKILL.md) | Verified Channels APIs for the Slack template |
+## Run mobile
 
-The app READMEs provide launch commands, files to customize, and a concrete result to check. Start with one template and add a second surface only if it helps your user.
+The Expo app is intentionally outside the npm workspace. Start the web runtime first:
 
-## Resources
+```bash
+npm run dev:web
+```
 
-| Need | Go here |
-|---|---|
-| Event details, deadline, and judging | [Find your city](https://aitinkerers.org/hackathons/global/agents-everywhere), then open its participant portal and handbook |
-| OpenAI agent development | [Agents SDK quickstart](https://openai.github.io/openai-agents-js/guides/quickstart/) |
-| OpenRouter access and model choice | [Quickstart](https://openrouter.ai/docs/quickstart) · [Keys](https://openrouter.ai/keys) · [Model catalog](https://openrouter.ai/models) · [Model switching](dev-docs/model-switching.md) |
-| CopilotKit app development | [Docs](https://docs.copilotkit.ai/) · [Tools and context](dev-docs/tools-and-context.md) · [Discord channel for technical questions](https://discord.com/channels/1122926057641742418/1548038338848489532) |
-| CopilotKit Channels | [Channels guide](https://copilotkit.ai/channels-guide.md) · [Screenshot walkthrough](dev-docs/channels-sdk-walkthrough/README.md) · [OpenTag example app](https://github.com/CopilotKit/OpenTag) |
-| Exa quickstart | [Search API guide](https://exa.ai/docs/reference/search-api-guide) · [Kit setup](using-sponsor-tools.md#exa) |
-| Auth0 API authorization | [Node API](https://auth0.com/docs/quickstart/backend/nodejs) · [Kit setup](using-sponsor-tools.md#auth0) |
-| Ambiguous AI quickstart | [Developer guide](https://www.ambiguous.ai/llms.txt) · [Kit setup](using-sponsor-tools.md#ambiguous-ai) |
-| Rehearse and debug | [Demo prompts](dev-docs/demo-prompts.md) · [Troubleshooting](dev-docs/troubleshooting.md) |
-| Prepare your entry | [Submission checklist](SUBMISSION.md) |
+In a second terminal:
 
-For credit redemption instructions, choose your city on the [global event page](https://aitinkerers.org/hackathons/global/agents-everywhere) and check its participant portal's **Credits & Offers** section.
+```bash
+cd apps/mobile
+npm ci
+npm start
+```
 
-For technical questions during the event, check your city's participant portal and ask your local organizers.
+Press `i` for the iOS Simulator or `a` for an Android emulator. The default runtime URL is `http://localhost:3100/api/mobile-copilotkit`. Android emulators use `http://10.0.2.2:3100/api/mobile-copilotkit`; physical devices need a deliberately reachable runtime URL in `apps/mobile/.env`.
 
-For the Slack/web workspaces, `npm run verify` runs typechecks and offline tests without credentials. The mobile app has its own install, tests, typecheck, and Metro export checks under `apps/mobile`. Each app reports missing configuration when the relevant integration is used. Live sponsor calls and platform delivery require your accounts. See [developer docs](dev-docs/README.md) for detailed setup and deployment.
+See [apps/mobile/README.md](apps/mobile/README.md) for device networking and bundle checks.
+
+## Verify the repository
+
+The root checks are offline and do not require live provider credentials:
+
+```bash
+npm run verify
+```
+
+Useful focused commands:
+
+```bash
+npm run typecheck
+npm test
+npm run build --workspace web
+npm test --workspace channel
+```
+
+For mobile:
+
+```bash
+npm test --prefix apps/mobile
+npm run typecheck --prefix apps/mobile
+npm run bundle:ios --prefix apps/mobile
+npm run bundle:android --prefix apps/mobile
+```
+
+## Project layout
+
+| Path | Purpose |
+| --- | --- |
+| `apps/web` | Next.js web app and mobile runtime endpoint |
+| `apps/channel` | CopilotKit Channels listener for Slack |
+| `apps/mobile` | Expo React Native client |
+| `packages/agent-core` | Shared agent, model, and prompt code |
+| `dev-docs` | Setup, sponsor, demo, troubleshooting, and deployment notes |
+
+## Troubleshooting
+
+- **Missing model configuration:** check `MODEL_PROVIDER`, the matching API key, and `MODEL` in the root `.env`, then restart the dev server.
+- **Web opens but provider actions fail:** configure `AMBIGUOUS_API_KEY` for workplace writes or the relevant optional integration key.
+- **Slack does not receive messages:** verify `CHANNEL_CODE` matches the managed Channel exactly and that `INTELLIGENCE_API_KEY` is project-scoped.
+- **A phone cannot reach the runtime:** do not use `localhost` from a physical device; configure a reachable, trusted runtime URL.
+
+More detail is available in [dev-docs/README.md](dev-docs/README.md), [dev-docs/troubleshooting.md](dev-docs/troubleshooting.md), and the individual app READMEs.
