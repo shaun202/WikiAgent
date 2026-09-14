@@ -7,7 +7,7 @@ This repository contains three CopilotKit agent surfaces:
 - **Slack:** a thread agent delivered through CopilotKit Channels, with optional Exa web search.
 - **Mobile:** an Expo finance assistant that uses the web runtime and renders native tool cards.
 
-Start with the web app first. Slack and mobile are optional integrations and have separate credentials or device setup.
+Start with the web app first. Slack and mobile are currently unimplemented and may be expanded upon in the future.
 
 ## Prerequisites
 
